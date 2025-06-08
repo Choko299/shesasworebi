@@ -1,0 +1,299 @@
+სრულყოფილი "Plug and Play" ტუტორიალი გამოცდისთვის
+
+მიზანი: პროექტის სწრაფი ადაპტაცია გამოცდაზე მოცემული ახალი თემის მიხედვით.
+
+მაგალითი: დავუშვათ, გამოცდაზე მოცემული დავალებაა "წიგნებზე".
+
+    თემა: Books (წიგნები)
+    თვისებები: Title (სათაური), PublicationYear (გამოცემის წელი), Author (ავტორი), ISBN (ISBN ნომერი)
+
+ნაბიჯი 0: წინასწარი მომზადება (გამოცდაზე მისვლისას)
+
+    გახსენი Visual Studio.
+    შექმენი ახალი პროექტი:
+        File > New > Project...
+        აირჩიე Windows Forms App (.NET Framework).
+        "Name" ველში ჩაწერე: MyProject. (ეს არის ნაგულისხმევი namespace და პროექტის სახელი).
+        დააჭირე Create.
+    დააკოპირე ყველა .cs ფაილი:
+        გახსენი შენი GitHub-ის (ან ნებისმიერი სხვა წყაროს) კოდი.
+        Program.cs: დააკოპირე და ჩასვი პროექტის Program.cs ფაილში.
+        Form1.cs: დააკოპირე და ჩასვი პროექტის Form1.cs ფაილში.
+        MyObject.cs: შექმენი ეს ფაილი (Solution Explorer > MyProject > Add > Class... > MyObject.cs > Add). დააკოპირე და ჩასვი კოდი.
+        DatabaseHelper.cs: შექმენი ეს ფაილი. დააკოპირე და ჩასვი კოდი.
+        Form2.cs: შექმენი ეს ფაილი (Solution Explorer > MyProject > Add > Windows Form... > Form2.cs > Add). დააკოპირე და ჩასვი კოდი.
+    წაშალე Designer.cs ფაილები:
+        Solution Explorer-ში, გააფართოვე Form1.cs (პატარა ისრით). დააწკაპუნე მაუსის მარჯვენა ღილაკით Form1.Designer.cs-ზე -> Delete -> OK.
+        Solution Explorer-ში, გააფართოვე Form2.cs. დააწკაპუნე მაუსის მარჯვენა ღილაკით Form2.Designer.cs-ზე -> Delete -> OK.
+    დააინსტალირე NuGet პაკეტი:
+        Solution Explorer-ში, დააწკაპუნე მაუსის მარჯვენა ღილაკით პროექტზე (MyProject) -> Manage NuGet Packages...
+        "Browse" ჩანართზე მოძებნე System.Data.SqlClient.
+        დააჭირე Install.
+
+ნაბიჯი 1: SQL მონაცემთა ბაზის სკრიპტის ადაპტაცია და გაშვება
+
+    გახსენი SQL Server Management Studio (SSMS).
+
+    შექმენი ახალი Query.
+
+    დააკოპირე MyExamSetup.sql კოდი (ბოლო მოწოდებული ვერსია).
+
+    შეასწორე ეს ადგილები (გამოცდაზე მოცემული თემის მიხედვით):
+        ცხრილის სახელი (მრავლობითი):
+            იპოვე: Table1 (ორ ადგილას).
+            შეცვალე: Books (ან Cars, Animals).
+        SQL
+
+-- ...
+IF OBJECT_ID('dbo.Books', 'U') IS NOT NULL -- Table1-ის ნაცვლად Books
+BEGIN
+    DROP TABLE dbo.Books; -- Table1-ის ნაცვლად Books
+END;
+GO
+-- ...
+CREATE TABLE Books ( -- Table1-ის ნაცვლად Books
+-- ...
+);
+
+სვეტების სახელები და მათი ტიპები (NVARCHAR(255) - დატოვე):
+
+    იპოვე: Property1, Property2, Property3, Property4.
+    შეცვალე: Title, PublicationYear, Author, ISBN. (დარწმუნდი, რომ ყველა არის NVARCHAR(255) ტიპის).
+
+SQL
+
+CREATE TABLE Books (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Title NVARCHAR(255) NOT NULL,         -- Property1-ის ნაცვლად Title
+    PublicationYear NVARCHAR(255) NOT NULL, -- Property2-ის ნაცვლად PublicationYear
+    Author NVARCHAR(255),                 -- Property3-ის ნაცვლად Author
+    ISBN NVARCHAR(255)                    -- Property4-ის ნაცვლად ISBN
+    -- თუ მეტი თვისებაა, დაამატე აქ: მაგალითად, Pages NVARCHAR(255)
+);
+
+სატესტო მონაცემები (სურვილისამებრ):
+
+    შეცვალე: Table1 -> Books, და მონაცემებიც შესაბამისად.
+
+SQL
+
+INSERT INTO Books (Title, PublicationYear, Author, ISBN)
+VALUES ('ომი და მშვიდობა', '1869', 'ლევ ტოლსტოი', '978-0140447934'),
+       ('ვეფხისტყაოსანი', '1200-იანი', 'შოთა რუსთაველი', '978-9941121966');
+
+მონაცემთა ბაზის სახელი (სურვილისამებრ):
+
+    იპოვე: Database1 (ორ ადგილას).
+    შეცვალე: ExamDB (ან BooksDB, CarsDB, რომ უფრო სპეციფიკური იყოს). თუ შეცვლი, ჩაიწერე ახალი სახელი, რადგან C# კოდშიც დაგვჭირდება.
+
+SQL
+
+        CREATE DATABASE ExamDB;
+        -- ...
+        USE ExamDB;
+
+    გაუშვი SQL სკრიპტი:
+        SSMS-ში, MyExamSetup.sql ფანჯარაში, დარწმუნდი, რომ ზედა ჩამოსაშლელ სიაში არჩეულია master.
+        დააჭირე Execute.
+        Messages ფანჯარაში უნდა დაინახო შეტყობინებები, რომ ბრძანებები წარმატებით შესრულდა. არ უნდა იყოს არანაირი წითელი შეცდომა.
+
+ნაბიჯი 2: C# კოდის ადაპტაცია (Visual Studio-ში)
+
+    Program.cs:
+        ცვლილება: namespace MyProject
+        სად: Program.cs ფაილის დასაწყისში.
+        რა: თუ შენი Visual Studio პროექტის სახელი არის MyProject (როგორც ჩვენს მაგალითში), მაშინ არაფერი არ შეცვალო. თუ შენს პროექტს სხვა სახელი დაარქვი, მაშინ MyProject-ის ნაცვლად ჩაწერე შენი პროექტის ზუსტი სახელი.
+
+    Form1.cs (მთავარი ფანჯრის ლოგიკა):
+        _tableName:
+            სად: Form1.cs ფაილში, Form1() კონსტრუქტორის შიგნით.
+            რა: შეცვალე "Table1"-ის ნაცვლად "Books" (ზუსტად ისე, როგორც SQL-ში დაარქვი ცხრილს, მრავლობითში).
+        C#
+
+public Form1()
+{
+    _tableName = "Books"; // !!! შეცვლილია !!!
+    // ...
+}
+
+this.Text:
+
+    სად: Form1.cs ფაილში, InitializeUI() მეთოდის დასაწყისში.
+    რა: შეცვალე "ზოგადი მენეჯერი"-ს ნაცვლად "წიგნების მენეჯერი".
+
+C#
+
+private void InitializeUI()
+{
+    this.Text = "წიგნების მენეჯერი"; // !!! შეცვლილია !!!
+    // ...
+}
+
+ღილაკების Text:
+
+    სად: Form1.cs ფაილში, InitializeUI() მეთოდის შიგნით.
+    რა: შეცვალე "ობიექტის დამატება"-ს ნაცვლად "წიგნის დამატება" და "ობიექტის წაშლა"-ს ნაცვლად "წიგნის წაშლა".
+
+C#
+
+_addButton.Text = "წიგნის დამატება"; // !!! შეცვლილია !!!
+_deleteButton.Text = "წიგნის წაშლა"; // !!! შეცვლილია !!!
+
+MessageBox:
+
+    სად: Form1.cs ფაილში, DeleteObject_Click მეთოდის შიგნით.
+    რა: შეცვალე ტექსტი, რომ ემთხვეოდეს ობიექტს.
+
+C#
+
+    MessageBox.Show($"დარწმუნებული ხართ, რომ გსურთ '{selectedObject.Property1}' წიგნის წაშლა?", "წაშლის დადასტურება", MessageBoxButtons.YesNo, MessageBoxIcon.Warning); // !!! შეცვლილია !!!
+
+MyObject.cs (მონაცემთა მოდელი):
+
+    კლასის სახელი:
+        სად: MyObject.cs ფაილი.
+        რა: შეცვალე MyObject -> Book.
+            გააკეთე ეს "Rename" ფუნქციით: Solution Explorer-ში დააწკაპუნე მაუსის მარჯვენა ღილაკით MyObject.cs-ზე -> Rename -> შეცვალე სახელი Book.cs-ით -> დაადასტურე (Yes), როდესაც Visual Studio გკითხავს ყველა რეფერენსის განახლებაზე.
+    C#
+
+public class Book // !!! შეცვლილია MyObject-ის ნაცვლად !!!
+{
+    // ...
+}
+
+თვისებების სახელები:
+
+    სად: Book.cs (ყოფილი MyObject.cs) ფაილში.
+    რა: შეცვალე Property1, Property2, Property3, Property4 -> Title, PublicationYear, Author, ISBN. (ტიპები დარჩება string).
+
+C#
+
+public string Title { get; set; }          // !!! Property1-ის ნაცვლად !!!
+public string PublicationYear { get; set; } // !!! Property2-ის ნაცვლად !!!
+public string Author { get; set; }         // !!! Property3-ის ნაცვლად !!!
+public string ISBN { get; set; }           // !!! Property4-ის ნაცვლად !!!
+
+ToString() მეთოდი:
+
+    სად: Book.cs (ყოფილი MyObject.cs) ფაილში.
+    რა: შეცვალე ისე, რომ გამოიყენოს ახალი თვისებების სახელები და აჩვენოს წიგნის დეტალები.
+
+C#
+
+    public override string ToString()
+    {
+        string authorDisplay = string.IsNullOrWhiteSpace(Author) ? "N/A" : Author;
+        string isbnDisplay = string.IsNullOrWhiteSpace(ISBN) ? "N/A" : ISBN;
+
+        return $"{Title} ({PublicationYear}), ავტორი: {authorDisplay}, ISBN: {isbnDisplay}"; // !!! შეცვლილია !!!
+    }
+
+DatabaseHelper.cs (მონაცემთა ბაზის დამხმარე კლასი):
+
+    MyObject -> Book:
+        სად: DatabaseHelper.cs ფაილში, ყველა ადგილას, სადაც MyObject წერია (მაგალითად, List<MyObject> objects, public List<MyObject> GetAllObjects(), public void AddObject(MyObject obj), private MyObject MapToObject(...)).
+        რა: შეცვალე MyObject -> Book.
+    C#
+
+public List<Book> GetAllObjects() // !!! შეცვლილია MyObject-ის ნაცვლად !!!
+{
+    List<Book> objects = new List<Book>(); // !!! შეცვლილია MyObject-ის ნაცვლად !!!
+    // ...
+}
+public void AddObject(Book obj) // !!! შეცვლილია MyObject-ის ნაცვლად !!!
+{
+    // ...
+}
+private Book MapToObject(SqlDataReader reader) // !!! შეცვლილია MyObject-ის ნაცვლად !!!
+{
+    // ...
+}
+
+SQL სვეტების სახელები INSERT-ში:
+
+    სად: DatabaseHelper.cs ფაილში, AddObject მეთოდში.
+    რა: შეცვალე Property1, Property2... -> Title, PublicationYear, Author, ISBN (ზუსტად ისე, როგორც SQL-ში დაარქვი სვეტებს).
+
+C#
+
+string query = $"INSERT INTO {_tableName} (Title, PublicationYear, Author, ISBN) VALUES (@Prop1, @Prop2, @Prop3, @Prop4)"; // !!! შეცვლილია !!!
+// ...
+command.Parameters.AddWithValue("@Prop1", obj.Title);          // !!! შეცვლილია Property1-ის ნაცვლად Title !!!
+command.Parameters.AddWithValue("@Prop2", obj.PublicationYear); // !!! შეცვლილია Property2-ის ნაცვლად PublicationYear !!!
+command.Parameters.AddWithValue("@Prop3", obj.Author);         // !!! შეცვლილია Property3-ის ნაცვლად Author !!!
+command.Parameters.AddWithValue("@Prop4", obj.ISBN);           // !!! შეცვლილია Property4-ის ნაცვლად ISBN !!!
+
+SQL სვეტების სახელები SELECT-ში (MapToObject):
+
+    სად: DatabaseHelper.cs ფაილში, MapToObject მეთოდში.
+    რა: შეცვალე Property1, Property2... -> Title, PublicationYear, Author, ISBN (ზუსტად ისე, როგორც SQL-ში დაარქვი სვეტებს).
+
+C#
+
+    return new Book
+    {
+        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+        Title = reader.GetString(reader.GetOrdinal("Title")),                   // !!! შეცვლილია !!!
+        PublicationYear = reader.GetString(reader.GetOrdinal("PublicationYear")), // !!! შეცვლილია !!!
+        Author = reader.IsDBNull(reader.GetOrdinal("Author")) ? null : reader.GetString(reader.GetOrdinal("Author")), // !!! შეცვლილია !!!
+        ISBN = reader.IsDBNull(reader.GetOrdinal("ISBN")) ? null : reader.GetString(reader.GetOrdinal("ISBN"))      // !!! შეცვლილია !!!
+    };
+
+Form2.cs (დამატების/რედაქტირების ფანჯარა):
+
+    MyObject -> Book:
+        სად: Form2.cs ფაილში, NewObject თვისების დეკლარაციაში და კონსტრუქტორში.
+        რა: შეცვალე MyObject -> Book.
+    C#
+
+public Book NewObject { get; private set; } // !!! შეცვლილია MyObject-ის ნაცვლად Book !!!
+// ...
+public Form2()
+{
+    // ...
+    NewObject = new Book(); // !!! შეცვლილია MyObject-ის ნაცვლად Book !!!
+    // ...
+}
+
+this.Text:
+
+    სად: Form2.cs ფაილში, InitializeUI() მეთოდში.
+    რა: შეცვალე "ახალი ობიექტის დამატება"-ს ნაცვლად "ახალი წიგნის დამატება".
+
+C#
+
+this.Text = "ახალი წიგნის დამატება"; // !!! შეცვლილია !!!
+
+Label-ების Text:
+
+    სად: Form2.cs ფაილში, InitializeUI() მეთოდში.
+    რა: შეცვალე "თვისება 1:", "თვისება 2:", "თვისება 3:", "თვისება 4:" -> "სათაური:", "გამოცემის წელი:", "ავტორი:", "ISBN:".
+
+C#
+
+mainLayout.Controls.Add(new Label() { Text = "სათაური:", Anchor = AnchorStyles.Right }, 0, 0);       // !!! შეცვლილია !!!
+mainLayout.Controls.Add(new Label() { Text = "გამოცემის წელი:", Anchor = AnchorStyles.Right }, 0, 1); // !!! შეცვლილია !!!
+mainLayout.Controls.Add(new Label() { Text = "ავტორი:", Anchor = AnchorStyles.Right }, 0, 2);           // !!! შეცვლილია !!!
+mainLayout.Controls.Add(new Label() { Text = "ISBN:", Anchor = AnchorStyles.Right }, 0, 3);         // !!! შეცვლილია !!!
+
+მნიშვნელობების მინიჭება SaveButton_Click-ში:
+
+    სად: Form2.cs ფაილში, SaveButton_Click მეთოდში.
+    რა: შეცვალე Property1, Property2... -> Title, PublicationYear, Author, ISBN (ზუსტად ისე, როგორც Book კლასში დაარქვი თვისებებს).
+
+C#
+
+        NewObject.Title = _prop1TextBox.Text;           // !!! შეცვლილია Property1-ის ნაცვლად Title !!!
+        NewObject.PublicationYear = _prop2TextBox.Text; // !!! შეცვლილია Property2-ის ნაცვლად PublicationYear !!!
+        NewObject.Author = _prop3TextBox.Text;          // !!! შეცვლილია Property3-ის ნაცვლად Author !!!
+        NewObject.ISBN = _prop4TextBox.Text;            // !!! შეცვლილია Property4-ის ნაცვლად ISBN !!!
+
+საბოლოო ნაბიჯები (ყოველთვის ამის შემდეგ):
+
+    Build > Clean Solution.
+    Build > Rebuild Solution.
+    გაშვი აპლიკაცია (F5).
+
+ეს არის სრული ინსტრუქცია, თუ როგორ მოარგოთ პროექტი "წიგნების" თემას. თუ სხვა თემაა, უბრალოდ ჩაანაცვლეთ "წიგნების" შესაბამისი სიტყვებით, ზუსტად ამ თანმიმდევრობით.
+
+წარმატებებს გისურვებ გამოცდაზე!
