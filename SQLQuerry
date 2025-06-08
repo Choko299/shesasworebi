@@ -1,0 +1,32 @@
+
+
+-- 2. გამოიყენე შექმნილი მონაცემთა ბაზა.
+USE Database1;
+GO
+
+-- 3. წაშალე ცხრილი, თუ არსებობს, და თავიდან შექმენი.
+--    'Table1' - ეს არის ცხრილის სახელი.
+-- !!! გამოცდაზე: შეცვალე 'Table1' შენი თემის შესაბამისი სახელით, მაგ. 'Cars', 'Movies', 'Books'
+IF OBJECT_ID('dbo.Table1', 'U') IS NOT NULL
+BEGIN
+    DROP TABLE dbo.Table1;
+END;
+GO
+
+-- 4. ცხრილის შექმნა.
+-- !!! გამოცდაზე: შეცვალე 'Table1' იმავე სახელით, რაც ზემოთ.
+-- !!! გამოცდაზე: შეცვალე 'Property1', 'Property2', 'Property3', 'Property4'
+--               დარწმუნდი, რომ ტიპები არის NVARCHAR(255), რათა მიიღოს როგორც ასოები, ისე რიცხვები.
+CREATE TABLE Table1 (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Property1 NVARCHAR(255) NOT NULL, -- Property1: ტექსტი, სავალდებულო (მაგ. Model, Title, Name)
+    Property2 NVARCHAR(255) NOT NULL, -- Property2: ტექსტი, სავალდებულო (მაგ. Year, ReleaseYear, Quantity)
+    Property3 NVARCHAR(255),          -- Property3: ტექსტი, არასავალდებულო (მაგ. Color, Director, Author, Genre)
+    Property4 NVARCHAR(255)           -- Property4: ტექსტი, არასავალდებულო (მაგ. Price, Rating, Pages, Weight)
+    -- თუ მეტი თვისება გჭირდება, დაამატე აქ: Property5 NVARCHAR(255), Property6 NVARCHAR(255)
+);
+
+-- 5. სატესტო მონაცემების ჩამატება.
+INSERT INTO Table1 (Property1, Property2, Property3, Property4)
+VALUES ('ნიმუში A', 2025, 'კატეგორია X', 10.00),
+       ('ნიმუში B', 2024, 'კატეგორია Y', 20.50);
